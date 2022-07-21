@@ -6,6 +6,7 @@ const NORMAL = '😃'
 const LOOSE = '🤯'
 const WIN = '😎'
 const LIFE = '♥️'
+const HINT = '💡'
 
 var gBoard
 var gLevel
@@ -20,6 +21,8 @@ var gClickCount
 var gLife
 var gGame
 var gBestScore
+var gIsHint
+var gHint
 
 function initGame() {
     // game init
@@ -29,13 +32,16 @@ function initGame() {
         markedCount: 0,
         secsPassed: 0
     }
-    // gBestScore = gGame.secsPassed
+
     // life init
     gLife = 3
     var elCount = document.querySelector('.life-counter')
     elCount.textContent = `${LIFE.repeat(gLife)}`
 
     gIsFirstClick = false
+
+    gIsHint = false
+    gHint = 3
 
     // time init
     gSeconde = 0
@@ -50,6 +56,8 @@ function initGame() {
     // again (smiley) init 
     var elBtn = document.querySelector('.again')
     elBtn.textContent = NORMAL
+
+    document.getElementById("best-record").hidden = true
 
     // board default level init
     gLevel = {
@@ -171,6 +179,24 @@ function setMinesNegsCount(cellI, cellJ, mat) {
 /****************************************/
 
 function getClickIdx(e, element) {
+    // the player cant play
+    if (!gGame.isOn) return
+
+    // if clicked on the hint
+    if (gIsHint) {
+        var hintInterval = setInterval(() => {
+            expandShown()
+        }, 1000)
+
+        setTimeout(() => {
+            clearInterval(hintInterval)
+            unExpandShown()
+        }, 1500);
+    }
+
+
+    gIsHint = false
+
     // start the timer
     if (!gIsFirstClick) startTimer()
     gIsFirstClick = true
@@ -182,7 +208,8 @@ function getClickIdx(e, element) {
 
     // left clicked
     // and cell that didn't open yet
-    if (e.button === 0 && gSelectedElCell.isShown === true) {
+    if (e.button === 0 && gSelectedElCell.isShown === true && !gSelectedElCell.isMarked) {
+
 
         // if its not a mine
         if (!gSelectedElCell.isMine) {
@@ -194,21 +221,37 @@ function getClickIdx(e, element) {
         else {
             leftClickMine()
         }
-
-    } else if (e.button === 2) {
-        // update the MODEL
-        gSelectedElCell.isMarked = true
-        gGame.markedCount++
-
-
-        // add a flag at the DOM
-        var elText = element.querySelector('.text')
-        elText.textContent = FLAG
-        elText.style.display = 'block'
+        //right clicked
+    } else if (e.button === 2 && gSelectedElCell.isShown === true) {
+        rightClick()
     }
 
 
     checkGameOver()
+}
+
+function rightClick() {
+
+    if (!gSelectedElCell.isMarked) {
+        // update the MODEL
+        gSelectedElCell.isMarked = true
+        gGame.markedCount++
+
+        // add a flag at the DOM
+        var elText = gElement.querySelector('.text')
+        elText.textContent = FLAG
+        elText.style.display = 'block'
+    }
+    else {
+        // update the MODEL
+        gSelectedElCell.isMarked = false
+        gGame.markedCount--
+
+        // add a flag at the DOM
+        var elText = gElement.querySelector('.text')
+        elText.textContent = ' '
+        elText.style.display = 'none'
+    }
 }
 
 function leftClickCell() {
@@ -259,6 +302,8 @@ function leftClickMine() {
     }
 }
 
+/****************************************/
+
 function expandShown() {
     for (var i = gCellCoord.i - 1; i <= gCellCoord.i + 1; i++) {
         if (i < 0 || i >= gBoard.length) continue;
@@ -277,6 +322,27 @@ function expandShown() {
     }
 
 }
+
+function unExpandShown() {
+    for (var i = gCellCoord.i - 1; i <= gCellCoord.i + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue;
+        for (var j = gCellCoord.j - 1; j <= gCellCoord.j + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+
+            // update the MODEL
+            gBoard[i][j].isShown = true
+            var cell = { i, j }
+            // update the DOM
+            gGame.shownCount--
+            gElement = document.querySelector(`#cell-${cell.i}-${cell.j}`)
+            gElement.classList.toggle('checked')
+            var elText = gElement.querySelector('.text')
+            elText.style.display = 'none'
+        }
+    }
+}
+
+/****************************************/
 
 function getCellCoord(strCellId) {
     var parts = strCellId.split('-')
@@ -306,20 +372,40 @@ function handleLevel(el) {
             break;
 
     }
-    gBoard = createBoard()
-    renderBoard(gBoard)
+    play()
 
 }
 /****************************************/
 function storage() {
-    console.log('gGame.secsPassed:', localStorage.Score)
-    localStorage.Score = Infinity
-    if (gGame.secsPassed > localStorage.Score)
-        localStorage.Score = gGame.secsPassed
-    // Store
+    document.getElementById("best-record").hidden = false
+    // localStorage.removeItem("basicLevel");
+    // localStorage.removeItem("mediumLevel");
+    // localStorage.removeItem("hardLevel");
+    if (gLevel.SIZE === 4) {
+        localStorage.basicLevel = 1000
+        if (gGame.secsPassed < localStorage.basicLevel) {
+            localStorage.basicLevel = gGame.secsPassed
+            // Retrieve
+            document.getElementById("best-record").innerHTML = `best score: ${localStorage.basicLevel}`
+        }
+    } else if (gLevel.SIZE === 8) {
+        localStorage.mediumLevel = 10000
 
-    // Retrieve
-    document.getElementById("best-record").innerHTML = localStorage.Score
+        if (gGame.secsPassed < localStorage.mediumLevel) {
+            localStorage.mediumLevel = gGame.secsPassed
+            // Retrieve
+            document.getElementById("best-record").innerHTML = `best score: ${localStorage.mediumLevel}`
+        }
+    } else {
+        localStorage.hardLevel = 10000
+
+        if (gGame.secsPassed < localStorage.hardLevel) {
+            localStorage.hardLevel = gGame.secsPassed
+            // Retrieve
+            document.getElementById("best-record").innerHTML = `best score: ${localStorage.hardLevel}`
+        }
+    }
+
 }
 /****************************************/
 //timer//
@@ -335,11 +421,19 @@ function startTimer() {
 }
 
 function stopTimer() {
-    storage()
+
     clearInterval(gGameInterval)
     gGame.secsPassed = gSeconde
+
 }
 
+/****************************************/
+
+function hintHandler(el) {
+    gHint--
+    gIsHint = true
+    el.textContent = `${HINT.repeat(gHint)}`
+}
 /****************************************/
 
 function reveal() {
@@ -362,14 +456,14 @@ function checkGameOver() {
 }
 
 function msgToUsr(isWinner) {
-
+    gGame.isOn = false
     var elMsg = document.querySelector('.massage')
     var elBtn = document.querySelector('.again')
-
     stopTimer()
     if (isWinner) {
         elMsg.textContent = 'win'
         elBtn.textContent = WIN
+        storage()
     }
     else {
         elMsg.textContent = 'lose'

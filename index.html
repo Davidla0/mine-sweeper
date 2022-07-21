@@ -16,7 +16,11 @@
     </div>
 
     <button class="again" onclick="initGame()">😃</button>
-    <div class="life-counter">♥️♥️♥️</div>
+
+    <div class="menu-counter">
+        <div class="life-counter">♥️♥️♥️</div>
+        <div class="hint-counter" onclick="hintHandler(this)">💡💡💡</div>
+    </div>
 
     <div class="levels">
         <button onclick="handleLevel(this)">4*4</button>
@@ -29,7 +33,7 @@
 
 
     <div class="massage"></div>
-    <div id="best-record"></div>
+    <div id="best-record" hidden></div>
 
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>

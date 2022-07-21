@@ -76,3 +76,22 @@ button {
 .massage {
     display: none;
 }
+
+.menu-counter {
+    width: 50%;
+
+}
+
+.menu-counter {
+    display: flex;
+    margin: auto;
+}
+
+.hint-counter {
+    flex: 1;
+    /* border: 2px solid yellow; */
+}
+
+hint-counter .life-counter:first-child {
+    margin: auto;
+}
