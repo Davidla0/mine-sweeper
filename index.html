@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/main.css">
     <title>mine sweeper</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body onload="initGame()">
@@ -14,6 +14,9 @@
     <div class="timer">
         <span id="minutes">00</span>:<span id="seconds">00</span>
     </div>
+
+    <button class="again" onclick="initGame()">😃</button>
+    <div class="life-counter">♥️♥️♥️</div>
 
     <div class="levels">
         <button onclick="handleLevel(this)">4*4</button>
@@ -24,9 +27,9 @@
 
     <table class="game-board"></table>
 
-    <div class="massage"></div>
 
-    <button class="again massage" onclick="initGame()">again</button>
+    <div class="massage"></div>
+    <div id="best-record"></div>
 
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
