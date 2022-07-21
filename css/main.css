@@ -84,7 +84,9 @@ button {
 
 .menu-counter {
     display: flex;
-    margin: auto;
+    margin-left: 400px;
+    margin-right: 100px;
+
 }
 
 .hint-counter {
