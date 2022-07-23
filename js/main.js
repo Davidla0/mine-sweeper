@@ -42,6 +42,8 @@ function initGame() {
 
     gIsHint = false
     gHint = 3
+    var elHint = document.querySelector('.hint-counter')
+    elHint.textContent = `${HINT.repeat(gLife)}`
 
     // time init
     gSeconde = 0
@@ -111,8 +113,7 @@ function createCell() {
         minesAroundCount: 1,
         isShown: true,
         isMine: false,
-        isMarked: false
-
+        isMarked: false,
     }
     return cell
 }
@@ -181,7 +182,6 @@ function setMinesNegsCount(cellI, cellJ, mat) {
 function getClickIdx(e, element) {
     // the player cant play
     if (!gGame.isOn) return
-
     // if clicked on the hint
     if (gIsHint) {
         var hintInterval = setInterval(() => {
@@ -192,10 +192,11 @@ function getClickIdx(e, element) {
             clearInterval(hintInterval)
             unExpandShown()
         }, 1500);
+
+
     }
-
-
     gIsHint = false
+
 
     // start the timer
     if (!gIsFirstClick) startTimer()
@@ -206,8 +207,12 @@ function getClickIdx(e, element) {
     gCellCoord = getCellCoord(gElement.id)
     gSelectedElCell = gBoard[gCellCoord.i][gCellCoord.j]
 
+
+
+
     // left clicked
     // and cell that didn't open yet
+    // and cell that didn't marked
     if (e.button === 0 && gSelectedElCell.isShown === true && !gSelectedElCell.isMarked) {
 
 
@@ -255,7 +260,6 @@ function rightClick() {
 }
 
 function leftClickCell() {
-
     // if the value don't have mines neighbors then reveal all the neighbors
     if (gSelectedElCell.minesAroundCount === ' ') {
         expandShown()
@@ -303,14 +307,16 @@ function leftClickMine() {
 }
 
 /****************************************/
-
+var gAllReadyShown
 function expandShown() {
+    gAllReadyShown = []
     for (var i = gCellCoord.i - 1; i <= gCellCoord.i + 1; i++) {
         if (i < 0 || i >= gBoard.length) continue;
         for (var j = gCellCoord.j - 1; j <= gCellCoord.j + 1; j++) {
             if (j < 0 || j >= gBoard[i].length) continue;
             // if the cell is already reveal                   
-            if (gBoard[i][j].isShown === false) continue;
+            if (gBoard[i][j].isShown === false) continue
+
 
             // update the MODEL
             gBoard[i][j].isShown = false
@@ -320,7 +326,6 @@ function expandShown() {
             reveal()
         }
     }
-
 }
 
 function unExpandShown() {
@@ -328,10 +333,10 @@ function unExpandShown() {
         if (i < 0 || i >= gBoard.length) continue;
         for (var j = gCellCoord.j - 1; j <= gCellCoord.j + 1; j++) {
             if (j < 0 || j >= gBoard[i].length) continue
-
             // update the MODEL
             gBoard[i][j].isShown = true
             var cell = { i, j }
+
             // update the DOM
             gGame.shownCount--
             gElement = document.querySelector(`#cell-${cell.i}-${cell.j}`)

@@ -10,31 +10,32 @@
 </head>
 
 <body onload="initGame()">
+    <div class="img-container">
 
-    <div class="timer">
-        <span id="minutes">00</span>:<span id="seconds">00</span>
+        <div class="timer">
+            <span id="minutes">00</span>:<span id="seconds">00</span>
+        </div>
+
+        <button class="again" onclick="initGame()">😃</button>
+
+        <div class="menu-counter">
+            <div class="life-counter">♥️♥️♥️</div>
+            <div class="hint-counter" onclick="hintHandler(this)">💡💡💡</div>
+        </div>
+
+        <div class="levels">
+            <button onclick="handleLevel(this)">4*4</button>
+            <button onclick="handleLevel(this)">8*8</button>
+            <button onclick="handleLevel(this)">12*12</button>
+        </div>
+
+
+        <table class="game-board"></table>
+
+
+        <div class="massage"></div>
+        <div id="best-record" hidden></div>
     </div>
-
-    <button class="again" onclick="initGame()">😃</button>
-
-    <div class="menu-counter">
-        <div class="life-counter">♥️♥️♥️</div>
-        <div class="hint-counter" onclick="hintHandler(this)">💡💡💡</div>
-    </div>
-
-    <div class="levels">
-        <button onclick="handleLevel(this)">4*4</button>
-        <button onclick="handleLevel(this)">8*8</button>
-        <button onclick="handleLevel(this)">12*12</button>
-    </div>
-
-
-    <table class="game-board"></table>
-
-
-    <div class="massage"></div>
-    <div id="best-record" hidden></div>
-
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
 </body>
